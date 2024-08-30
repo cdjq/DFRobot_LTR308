@@ -17,9 +17,9 @@ DFRobot_LTR308::DFRobot_LTR308(TwoWire *pWire)
 {
   _deviceAddr = LTR308_ADDR;
   _pWire = pWire;
-  _gain = 0x01;
-  _resolution = 0x02;
-  _measurementRate = 0x02;
+  _gain = eGain_3X;
+  _resolution = eConversion_100ms_18b;
+  _measurementRate = eRate_100ms;
 }
 
 DFRobot_LTR308::~DFRobot_LTR308()
@@ -71,12 +71,13 @@ uint8_t DFRobot_LTR308::getPower(void)
   return data;
 }
 
-void DFRobot_LTR308::setGain(uint8_t gain)
+void DFRobot_LTR308::setGain(eGain_t gain)
 {
   if(gain > 4){
-    gain = 0x01;
+    gain = eGain_1X;
   }
-  writeReg(LTR308_REG_ALS_GAIN, &gain, 1);
+  uint8_t _sendData = gain;
+  writeReg(LTR308_REG_ALS_GAIN, &_sendData, 1);
   _gain = gain;
 }
 
@@ -91,18 +92,18 @@ void DFRobot_LTR308::setMeasurementRate(sMeasRate_t measRate)
 {
   uint8_t data = 0x00;
   if (measRate.resolution >= 5){
-    measRate.resolution = 4;
+    measRate.resolution = eConversion_25ms_16b;
   }
   if (measRate.measurementRate >= 8 || measRate.measurementRate == 4){
-    measRate.measurementRate = 7;
+    measRate.measurementRate = eRate_2000ms_2;
   }
   data = (measRate.resolution << 4) | measRate.measurementRate;
   writeReg(LTR308_REG_MEAS_RATE, &data, 1);
   _resolution = measRate.resolution;
-  _measurementRate = measRate.resolution;
+  _measurementRate = measRate.measurementRate;
 }
 
-void DFRobot_LTR308::setMeasurementRate(uint8_t resolution, uint8_t measurementRate){
+void DFRobot_LTR308::setMeasurementRate(eResolution_t resolution, eMeasurementRate_t measurementRate){
   sMeasRate_t measRate = {resolution, measurementRate};
   setMeasurementRate(measRate);
 }
@@ -112,8 +113,8 @@ DFRobot_LTR308::sMeasRate_t DFRobot_LTR308::getMeasurementRate(void)
   uint8_t data = 0x00;
   sMeasRate_t measRate;
   readReg(LTR308_REG_MEAS_RATE, &data, 1);
-  measRate.resolution = (data & 0x70) >> 4;
-  measRate.measurementRate = data & 0x07;
+  measRate.resolution = static_cast<eResolution_t>((data & 0x70) >> 4) ;
+  measRate.measurementRate = static_cast<eMeasurementRate_t>(data & 0x07);
   return measRate;
 }
 
@@ -157,12 +158,9 @@ bool DFRobot_LTR308::getInterruptControl(void)
   return (data & 0x04) ? true : false;
 }
 
-void DFRobot_LTR308::setIntrPersist(uint8_t persist)
+void DFRobot_LTR308::setIntrPersist(eIntrPersist_t persist)
 {
   uint8_t data = 0x00;
-  if (persist >= 16){
-    persist = 15;
-  }
   data = persist << 4;
   writeReg(LTR308_REG_INTR_PERS, &data, 1);
 }
@@ -202,24 +200,24 @@ DFRobot_LTR308::sThres_t DFRobot_LTR308::getThreshold(void)
   return thres;
 }
 
-double DFRobot_LTR308::getLux(uint8_t gain, uint8_t resolution, uint32_t alsData)
+double DFRobot_LTR308::getLux(eGain_t gain, eResolution_t resolution, uint32_t alsData)
 {
   double lux = 0.0;
   lux = alsData * 0.6;
   switch (gain){
-  case 0:
+  case eGain_1X:
     lux = lux;
     break;
-  case 0x01:
+  case eGain_3X:
     lux = lux / 3;
     break;
-  case 0x02:
+  case eGain_6X:
     lux = lux / 6;
     break;
-  case 0x03:
+  case eGain_9X:
     lux = lux / 9;
     break;
-  case 0x04:
+  case eGain_18X:
     lux = lux / 18;
     break;
   default:
@@ -228,19 +226,19 @@ double DFRobot_LTR308::getLux(uint8_t gain, uint8_t resolution, uint32_t alsData
   }
 
   switch (resolution){
-  case 0x00:
+  case eConversion_400ms_20b:
     lux = lux / 4;
     break;
-  case 0x01:
+  case eConversion_200ms_19b:
     lux = lux / 2;
     break;
-  case 0x02:
+  case eConversion_100ms_18b:
     lux = lux;
     break;
-  case 0x03:
+  case eConversion_50ms_17b:
     lux = lux * 2;
     break;
-  case 0x04:
+  case eConversion_25ms_16b:
     lux = lux * 4;
     break;
   default:

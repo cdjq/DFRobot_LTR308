@@ -48,22 +48,76 @@
 
 class DFRobot_LTR308
 {
-private:
-  uint8_t _deviceAddr;
-  TwoWire* _pWire;
-  uint8_t _gain;
-  uint8_t _resolution;
-  uint8_t _measurementRate;
-
 public:
+  /**
+   * @enum eGain_t
+   * @brief Enumerated gain
+   */
+  typedef enum {
+    eGain_1X=0x00,
+    eGain_3X,
+    eGain_6X,
+    eGain_9X,
+    eGain_18X
+  }eGain_t;
 
+  /**
+   * @enum eIntrPersist_t
+   * @brief Enumeration interrupts persistence
+   */
+  typedef enum {
+    eInterruptTrigger_1=0x00,
+    eInterruptTrigger_2,
+    eInterruptTrigger_3,
+    eInterruptTrigger_4,
+    eInterruptTrigger_5,
+    eInterruptTrigger_6,
+    eInterruptTrigger_7,
+    eInterruptTrigger_8,
+    eInterruptTrigger_9,
+    eInterruptTrigger_10,
+    eInterruptTrigger_11,
+    eInterruptTrigger_12,
+    eInterruptTrigger_13,
+    eInterruptTrigger_14,
+    eInterruptTrigger_15,
+    eInterruptTrigger_16
+  }eIntrPersist_t;
+
+
+  /**
+   * @enum eResolution_t
+   * @brief Enumeration conversion time
+   */
+  typedef enum {
+    eConversion_400ms_20b=0x00,
+    eConversion_200ms_19b,
+    eConversion_100ms_18b,
+    eConversion_50ms_17b,
+    eConversion_25ms_16b
+  }eResolution_t;
+  
+  /**
+   * @enum eMeasurementRate_t
+   * @brief Enumeration measurement rate
+   */
+  typedef enum {
+    eRate_25ms=0x00,
+    eRate_50ms,
+    eRate_100ms,
+    eRate_500ms,
+    eRate_1000ms=5,
+    eRate_2000ms,
+    eRate_2000ms_2
+  }eMeasurementRate_t;
+  
   /**
    * @struct sMeasRate_t
    * @brief ALS measurement rate and resolution in Active Mode
    */
   typedef struct{
-    uint8_t resolution;
-    uint8_t measurementRate;
+    eResolution_t resolution;
+    eMeasurementRate_t measurementRate;
   }sMeasRate_t;
 
 
@@ -86,6 +140,13 @@ public:
     uint32_t upperLimit;
     uint32_t lowerLimit;
   }sThres_t;
+
+private:
+  uint8_t _deviceAddr;
+  TwoWire* _pWire;
+  eGain_t _gain;
+  eResolution_t _resolution;
+  eMeasurementRate_t _measurementRate;
 
 public:
   DFRobot_LTR308(TwoWire* pWire = &Wire);
@@ -119,84 +180,88 @@ public:
   /**
    * @fn setGain
    * @brief Set the Gain of LTR308
-   * @param gain: the gain
-   * @n If gain = 0, device is set to 1X gain
-   * @n If gain = 1, device is set to 3X gain (Sensor default)
-   * @n If gain = 2, device is set to 6X gain
-   * @n If gain = 3, device is set to 9X gain
-   * @n If gain = 4, device is set to 18X gain
+   * @param gain eGain_t
+   * @n eGain_1X        device is set to 1X gain
+   * @n eGain_3X        device is set to 3X gain (Sensor default)
+   * @n eGain_6X        device is set to 6X gain
+   * @n eGain_9X        device is set to 9X gain
+   * @n eGain_18X       device is set to 18X gain
    */
-  void setGain(uint8_t gain);
+  void setGain(eGain_t gain);
 
   /**
    * @fn getGain
    * @brief Get the Gain of LTR308
    * @return uint8_t: the control register values
-   * @retval If gain = 0, device is set to 1X gain
-   * @retval If gain = 1, device is set to 3X gain (Sensor default)
-   * @retval If gain = 2, device is set to 6X gain
-   * @retval If gain = 3, device is set to 9X gain
-   * @retval If gain = 4, device is set to 18X gain
+   * @retval 0      device is set to 1X gain
+   * @retval 1      device is set to 3X gain (Sensor default)
+   * @retval 2      device is set to 6X gain
+   * @retval 3      device is set to 9X gain
+   * @retval 4      device is set to 18X gain
    */
   uint8_t getGain(void);
 
   /**
    * @fn setMeasurementRate
    * @brief Set the Measurement Rate and resolution
-   * @param measRate: Measurement Rate and resolution
-   * @n If measRate.resolution = 0,  20 Bit result, Conversion time = 400ms.
-   * @n If measRate.resolution = 1,  19 Bit result, Conversion time = 200ms.
-   * @n If measRate.resolution = 2,  18 Bit result, Conversion time = 100ms.(Sensor default)
-   * @n If measRate.resolution = 3,  17 Bit result, Conversion time = 50ms.
-   * @n If measRate.resolution = 4,  16 Bit result, Conversion time = 25ms.
+   * @param measRate: (sMeasRate_t)  Measurement Rate and resolution
+   * @n measRate.resolution (eResolution_t)
+   * @n eConversion_400ms_20b     20 Bit result, Conversion time = 400ms.
+   * @n eConversion_200ms_19b     19 Bit result, Conversion time = 200ms.
+   * @n eConversion_100ms_18b     18 Bit result, Conversion time = 100ms.(Sensor default)
+   * @n eConversion_50ms_17b      17 Bit result, Conversion time = 50ms.
+   * @n eConversion_25ms_16b      16 Bit result, Conversion time = 25ms.
    * @n -------------------------------------------------------------------------------------------
-   * @n If measRate.measurementRate = 0, Measurement Rate will be 25ms.
-   * @n If measRate.measurementRate = 1, Measurement Rate will be 50ms.
-   * @n If measRate.measurementRate = 2, Measurement Rate will be 100ms.(Sensor default)
-   * @n If measRate.measurementRate = 3, Measurement Rate will be 500ms.
-   * @n If measRate.measurementRate = 5, Measurement Rate will be 1000ms.
-   * @n If measRate.measurementRate = 6, Measurement Rate will be 2000ms.
-   * @n If measRate.measurementRate = 7, Measurement Rate will be 2000ms.
+   * @n measRate.measurementRate (eMeasurementRate_t)
+   * @n eRate_25ms       Measurement Rate will be 25ms.
+   * @n eRate_50ms       Measurement Rate will be 50ms.
+   * @n eRate_100ms      Measurement Rate will be 100ms.(Sensor default)
+   * @n eRate_500ms      Measurement Rate will be 500ms.
+   * @n eRate_1000ms     Measurement Rate will be 1000ms.
+   * @n eRate_2000ms     Measurement Rate will be 2000ms.
+   * @n eRate_2000ms_2   Measurement Rate will be 2000ms.
    */
   void setMeasurementRate(sMeasRate_t measRate);
 
   /**
    * @fn setMeasurementRate
    * @brief Set the Measurement Rate and resolution
-   * @param resolution: The measurement time for each ALs cycle
-   * @n If resolution = 0,  20 Bit result, Conversion time = 400ms.
-   * @n If resolution = 1,  19 Bit result, Conversion time = 200ms.
-   * @n If resolution = 2,  18 Bit result, Conversion time = 100ms.(Sensor default)
-   * @n If resolution = 3,  17 Bit result, Conversion time = 50ms.
-   * @n If resolution = 4,  16 Bit result, Conversion time = 25ms.
-   * @param measurementRate: The interval between DATA_REGISTERS update
-   * @n If measurementRate = 0, Measurement Rate will be 25ms.
-   * @n If measurementRate = 1, Measurement Rate will be 50ms.
-   * @n If measurementRate = 2, Measurement Rate will be 100ms.(Sensor default)
-   * @n If measurementRate = 3, Measurement Rate will be 500ms.
-   * @n If measurementRate = 5, Measurement Rate will be 1000ms.
-   * @n If measurementRate = 6, Measurement Rate will be 2000ms.
-   * @n If measurementRate = 7, Measurement Rate will be 2000ms.
+   * @param resolution: (eResolution_t)  The measurement time for each ALs cycle
+   * @n eConversion_400ms_20b     20 Bit result, Conversion time = 400ms.
+   * @n eConversion_200ms_19b     19 Bit result, Conversion time = 200ms.
+   * @n eConversion_100ms_18b     18 Bit result, Conversion time = 100ms.(Sensor default)
+   * @n eConversion_50ms_17b      17 Bit result, Conversion time = 50ms.
+   * @n eConversion_25ms_16b      16 Bit result, Conversion time = 25ms.
+   * @param measurementRate: (eMeasurementRate_t)  The interval between DATA_REGISTERS update
+   * @n eRate_25ms       Measurement Rate will be 25ms.
+   * @n eRate_50ms       Measurement Rate will be 50ms.
+   * @n eRate_100ms      Measurement Rate will be 100ms.(Sensor default)
+   * @n eRate_500ms      Measurement Rate will be 500ms.
+   * @n eRate_1000ms     Measurement Rate will be 1000ms.
+   * @n eRate_2000ms     Measurement Rate will be 2000ms.
+   * @n eRate_2000ms_2   Measurement Rate will be 2000ms.
    */
-  void setMeasurementRate(uint8_t resolution, uint8_t measurementRate);
+  void setMeasurementRate(eResolution_t resolution, eMeasurementRate_t measurementRate);
 
   /**
    * @fn getMeasurementRate
    * @brief Get the Measurement Rate and resolution
    * @return sMeasRate_t: Measurement Rate and resolution
-   * @retval If measRate.resolution = 0,  20 Bit result, Conversion time = 400ms.
-   * @retval If measRate.resolution = 1,  19 Bit result, Conversion time = 200ms.
-   * @retval If measRate.resolution = 2,  18 Bit result, Conversion time = 100ms.(Sensor default)
-   * @retval If measRate.resolution = 3,  17 Bit result, Conversion time = 50ms.
-   * @retval If measRate.resolution = 4,  16 Bit result, Conversion time = 25ms.
+   * @retval sMeasRate_t.resolution (eResolution_t)
+   * @retval 0      20 Bit result, Conversion time = 400ms.
+   * @retval 1      19 Bit result, Conversion time = 200ms.
+   * @retval 2      18 Bit result, Conversion time = 100ms.(Sensor default)
+   * @retval 3      17 Bit result, Conversion time = 50ms.
+   * @retval 4      16 Bit result, Conversion time = 25ms.
    * @retval -------------------------------------------------------------------------------------------
-   * @retval If measRate.measurementRate = 0, Measurement Rate will be 25ms.
-   * @retval If measRate.measurementRate = 1, Measurement Rate will be 50ms.
-   * @retval If measRate.measurementRate = 2, Measurement Rate will be 100ms.(Sensor default)
-   * @retval If measRate.measurementRate = 3, Measurement Rate will be 500ms.
-   * @retval If measRate.measurementRate = 5, Measurement Rate will be 1000ms.
-   * @retval If measRate.measurementRate = 6, Measurement Rate will be 2000ms.
-   * @retval If measRate.measurementRate = 7, Measurement Rate will be 2000ms.
+   * @retval sMeasRate_t.measurementRate (eMeasurementRate_t)
+   * @retval 0      Measurement Rate will be 25ms.
+   * @retval 1      Measurement Rate will be 50ms.
+   * @retval 2      Measurement Rate will be 100ms.(Sensor default)
+   * @retval 3      Measurement Rate will be 500ms.
+   * @retval 5      Measurement Rate will be 1000ms.
+   * @retval 6      Measurement Rate will be 2000ms.
+   * @retval 7      Measurement Rate will be 2000ms.
    */
   sMeasRate_t getMeasurementRate(void);
 
@@ -251,45 +316,45 @@ public:
    * @fn setIntrPersist
    * @brief Set the Intr Persist of LTR308
    * @param persist: controls the N number of times the measurement data is outside the range defined by upper and lower threshold
-   * @n If persist = 0, Every ALS value out of threshold range asserts an interrupt (default)
-   * @n If persist = 1, 2 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 2, 3 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 3, 4 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 4, 5 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 5, 6 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 6, 7 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 7, 8 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 8, 9 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 9, 10 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 10, 11 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 11, 12 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 12, 13 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 13, 14 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 14, 15 consecutive ALS values out of threshold range assert an interrupt
-   * @n If persist = 15, 16 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_1     Every ALS value out of threshold range asserts an interrupt (default)
+   * @n eInterruptTrigger_2     2 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_3     3 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_4     4 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_5     5 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_6     6 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_7     7 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_8     8 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_9     9 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_10    10 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_11    11 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_12    12 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_13    13 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_14    14 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_15    15 consecutive ALS values out of threshold range assert an interrupt
+   * @n eInterruptTrigger_16    16 consecutive ALS values out of threshold range assert an interrupt
    */
-  void setIntrPersist(uint8_t persist);
+  void setIntrPersist(eIntrPersist_t persist);
 
   /**
    * @fn getIntrPersist
    * @brief Get the Intr Persist of LTR308
    * @return uint8_t: controls the N number of times the measurement data is outside the range defined by upper and lower threshold
-   * @retval If persist = 0, Every ALS value out of threshold range asserts an interrupt (default)
-   * @retval If persist = 1, 2 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 2, 3 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 3, 4 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 4, 5 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 5, 6 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 6, 7 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 7, 8 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 8, 9 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 9, 10 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 10, 11 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 11, 12 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 12, 13 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 13, 14 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 14, 15 consecutive ALS values out of threshold range assert an interrupt
-   * @retval If persist = 15, 16 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 0      Every ALS value out of threshold range asserts an interrupt (default)
+   * @retval 1      2 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 2      3 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 3      4 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 4      5 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 5      6 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 6      7 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 7      8 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 8      9 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 9      10 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 10     11 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 11     12 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 12     13 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 13     14 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 14     15 consecutive ALS values out of threshold range assert an interrupt
+   * @retval 15     16 consecutive ALS values out of threshold range assert an interrupt
    */
   uint8_t getIntrPersist(void);
 
@@ -327,7 +392,7 @@ public:
    * @param alsData: The ALS Data of this sensor
    * @return double: The converted lux value
    */
-  double getLux(uint8_t gain, uint8_t resolution, uint32_t alsData);
+  double getLux(eGain_t gain, eResolution_t resolution, uint32_t alsData);
 
   /**
    * @fn getLux

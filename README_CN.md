@@ -53,44 +53,46 @@ uint8_t getPower(void);
 /**
  * @fn setGain
  * @brief 设置LTR308的增益
- * @param gain: the gain
- * @n 如果 gain = 0, 则设备的增益效果为1X增益
- * @n 如果 gain = 1, 则设备的增益效果为3X增益 (传感器默认值)
- * @n 如果 gain = 2, 则设备的增益效果为6X增益
- * @n 如果 gain = 3, 则设备的增益效果为9X增益
- * @n 如果 gain = 4, 则设备的增益效果为18X增益
+ * @param gain: eGain_t
+ * @n eGain_1X      则设备的增益效果为1X增益
+ * @n eGain_3X      则设备的增益效果为3X增益 (传感器默认值)
+ * @n eGain_6X      则设备的增益效果为6X增益
+ * @n eGain_9X      则设备的增益效果为9X增益
+ * @n eGain_18X     则设备的增益效果为18X增益
  */
-void setGain(uint8_t gain);
+void setGain(eGain_t gain);
 
 /**
  * @fn getGain
  * @brief 获取LTR308的增益
  * @return uint8_t: 增益值
- * @retval 如果 gain = 0, 则设备的增益效果为1X增益
- * @retval 如果 gain = 1, 则设备的增益效果为3X增益 (传感器默认值)
- * @retval 如果 gain = 2, 则设备的增益效果为6X增益
- * @retval 如果 gain = 3, 则设备的增益效果为9X增益
- * @retval 如果 gain = 4, 则设备的增益效果为18X增益
+ * @retval 0        则设备的增益效果为1X增益
+ * @retval 1        则设备的增益效果为3X增益 (传感器默认值)
+ * @retval 2        则设备的增益效果为6X增益
+ * @retval 3        则设备的增益效果为9X增益
+ * @retval 4        则设备的增益效果为18X增益
  */
 uint8_t getGain(void);
 
 /**
  * @fn setMeasurementRate
  * @brief 设置测量速率和转化时间
- * @param measRate: 测量速率和转化时间
- * @n 如果 measRate.resolution = 0,  20位的结果, 转化时间 400ms.
- * @n 如果 measRate.resolution = 1,  19位的结果, 转化时间 200ms.
- * @n 如果 measRate.resolution = 2,  18位的结果, 转化时间 100ms.(传感器默认值)
- * @n 如果 measRate.resolution = 3,  17位的结果, 转化时间 50ms.
- * @n 如果 measRate.resolution = 4,  16位的结果, 转化时间 25ms.
+ * @param measRate: 类型(sMeasRate_t)  测量速率和转化时间
+ * @n measRate.resolution (eResolution_t)
+ * @n eConversion_400ms_20b     20位的结果, 转化时间 400ms.
+ * @n eConversion_200ms_19b     19位的结果, 转化时间 200ms.
+ * @n eConversion_100ms_18b     18位的结果, 转化时间 100ms.(传感器默认值)
+ * @n eConversion_50ms_17b      17位的结果, 转化时间 50ms.
+ * @n eConversion_25ms_16b      16位的结果, 转化时间 25ms.
  * @n -------------------------------------------------------------------------------------------
- * @n 如果 measRate.measurementRate = 0, 测量速率为 25ms.
- * @n 如果 measRate.measurementRate = 1, 测量速率为 50ms.
- * @n 如果 measRate.measurementRate = 2, 测量速率为 100ms.(传感器默认值)
- * @n 如果 measRate.measurementRate = 3, 测量速率为 500ms.
- * @n 如果 measRate.measurementRate = 5, 测量速率为 1000ms.
- * @n 如果 measRate.measurementRate = 6, 测量速率为 2000ms.
- * @n 如果 measRate.measurementRate = 7, 测量速率为 2000ms.
+ * @n measRate.measurementRate (eMeasurementRate_t)
+ * @n eRate_25ms        测量速率为 25ms.
+ * @n eRate_50ms        测量速率为 50ms.
+ * @n eRate_100ms       测量速率为 100ms.(传感器默认值)
+ * @n eRate_500ms       测量速率为 500ms.
+ * @n eRate_1000ms      测量速率为 1000ms.
+ * @n eRate_2000ms      测量速率为 2000ms.
+ * @n eRate_2000ms_2    测量速率为 2000ms.
  */
 void setMeasurementRate(sMeasRate_t measRate);
 
@@ -98,39 +100,41 @@ void setMeasurementRate(sMeasRate_t measRate);
  * @fn setMeasurementRate
  * @brief 设置测量速率和转化时间
  * @param resolution: 每个ALs周期的测量时间
- * @n 如果 resolution = 0,  20位的结果, 转化时间 400ms.
- * @n 如果 resolution = 1,  19位的结果, 转化时间 200ms.
- * @n 如果 resolution = 2,  18位的结果, 转化时间 100ms.(传感器默认值)
- * @n 如果 resolution = 3,  17位的结果, 转化时间 50ms.
- * @n 如果 resolution = 4,  16位的结果, 转化时间 25ms.
+ * @n eConversion_400ms_20b     20位的结果, 转化时间 400ms.
+ * @n eConversion_200ms_19b     19位的结果, 转化时间 200ms.
+ * @n eConversion_100ms_18b     18位的结果, 转化时间 100ms.(传感器默认值)
+ * @n eConversion_50ms_17b      17位的结果, 转化时间 50ms.
+ * @n eConversion_25ms_16b      16位的结果, 转化时间 25ms.
  * @param measurementRate: DATA_REGISTERS更新之间的间隔
- * @n 如果 measurementRate = 0, 测量速率为 25ms.
- * @n 如果 measurementRate = 1, 测量速率为 50ms.
- * @n 如果 measurementRate = 2, 测量速率为 100ms.(传感器默认值)
- * @n 如果 measurementRate = 3, 测量速率为 500ms.
- * @n 如果 measurementRate = 5, 测量速率为 1000ms.
- * @n 如果 measurementRate = 6, 测量速率为 2000ms.
- * @n 如果 measurementRate = 7, 测量速率为 2000ms.
+ * @n eRate_25ms        测量速率为 25ms.
+ * @n eRate_50ms        测量速率为 50ms.
+ * @n eRate_100ms       测量速率为 100ms.(传感器默认值)
+ * @n eRate_500ms       测量速率为 500ms.
+ * @n eRate_1000ms      测量速率为 1000ms.
+ * @n eRate_2000ms      测量速率为 2000ms.
+ * @n eRate_2000ms_2    测量速率为 2000ms.
  */
-void setMeasurementRate(uint8_t resolution, uint8_t measurementRate);
+void setMeasurementRate(eResolution_t resolution, eMeasurementRate_t measurementRate);
 
 /**
  * @fn getMeasurementRate
  * @brief 获取测量速率和转化时间
  * @return sMeasRate_t: 测量速率和转化时间
- * @retval 如果 resolution = 0,  20位的结果, 转化时间 400ms.
- * @retval 如果 resolution = 1,  19位的结果, 转化时间 200ms.
- * @retval 如果 resolution = 2,  18位的结果, 转化时间 100ms.(传感器默认值)
- * @retval 如果 resolution = 3,  17位的结果, 转化时间 50ms.
- * @retval 如果 resolution = 4,  16位的结果, 转化时间 25ms.
+ * @retval sMeasRate_t.resolution (eResolution_t)
+ * @retval 0        20位的结果, 转化时间 400ms.
+ * @retval 1        19位的结果, 转化时间 200ms.
+ * @retval 2        18位的结果, 转化时间 100ms.(传感器默认值)
+ * @retval 3        17位的结果, 转化时间 50ms.
+ * @retval 4        16位的结果, 转化时间 25ms.
  * @retval -------------------------------------------------------------------------------------------
- * @retval 如果 measRate.measurementRate = 0, 测量速率为 25ms.
- * @retval 如果 measRate.measurementRate = 1, 测量速率为 50ms.
- * @retval 如果 measRate.measurementRate = 2, 测量速率为 100ms.(传感器默认值)
- * @retval 如果 measRate.measurementRate = 3, 测量速率为 500ms.
- * @retval 如果 measRate.measurementRate = 5, 测量速率为 1000ms.
- * @retval 如果 measRate.measurementRate = 6, 测量速率为 2000ms.
- * @retval 如果 measRate.measurementRate = 7, 测量速率为 2000ms.
+ * @retval sMeasRate_t.measurementRate (eMeasurementRate_t)
+ * @retval 0        测量速率为 25ms.
+ * @retval 1        测量速率为 50ms.
+ * @retval 2        测量速率为 100ms.(传感器默认值)
+ * @retval 3        测量速率为 500ms.
+ * @retval 5        测量速率为 1000ms.
+ * @retval 6        测量速率为 2000ms.
+ * @retval 7        测量速率为 2000ms.
  */
 sMeasRate_t getMeasurementRate(void);
 
@@ -185,45 +189,45 @@ bool getInterruptControl(void);
  * @fn setIntrPersist
  * @brief 设置LTR308的中断持久化
  * @param persist: 控制测量数据超出上下阈值范围的N次
- * @n 如果persist = 0，每个超出阈值范围的ALS值断言一个中断(默认)
- * @n 如果persist = 1，则连续2个超出阈值范围的ALS值断言中断
- * @n 如果persist = 2，则连续3个超出阈值范围的ALS值断言中断
- * @n 如果persist = 3，则连续4个超出阈值范围的ALS值断言中断
- * @n 如果persist = 4，则连续5个超出阈值范围的ALS值断言中断
- * @n 如果persist = 5，则连续6个超出阈值范围的ALS值断言中断
- * @n 如果persist = 6，则连续7个超出阈值范围的ALS值断言中断
- * @n 如果persist = 7，则连续8个超出阈值范围的ALS值断言中断
- * @n 如果persist = 8，则连续9个超出阈值范围的ALS值断言中断
- * @n 如果persist = 9，则连续10个超出阈值范围的ALS值断言中断
- * @n 如果persist = 10，则连续11个超出阈值范围的ALS值断言中断
- * @n 如果persist = 11，则连续12个超出阈值范围的ALS值断言中断
- * @n 如果persist = 12，则连续13个超出阈值范围的ALS值断言中断
- * @n 如果persist = 13，则连续14个超出阈值范围的ALS值断言中断
- * @n 如果persist = 14，则连续15个超出阈值范围的ALS值断言中断
- * @n 如果persist = 15，则连续16个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_1   每个超出阈值范围的ALS值断言一个中断(默认)
+ * @n eInterruptTrigger_2   则连续2个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_3   则连续3个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_4   则连续4个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_5   则连续5个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_6   则连续6个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_7   则连续7个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_8   则连续8个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_9   则连续9个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_10  则连续10个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_11  则连续11个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_12  则连续12个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_13  则连续13个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_14  则连续14个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_15  则连续15个超出阈值范围的ALS值断言中断
+ * @n eInterruptTrigger_16  则连续16个超出阈值范围的ALS值断言中断
  */
-void setIntrPersist(uint8_t persist);
+void setIntrPersist(eIntrPersist_t persist);
 
 /**
  * @fn getIntrPersist
  * @brief 获取LTR308的中断持久化
  * @return uint8_t: 控制测量数据超出上下阈值范围的N次
- * @retval 如果persist = 0，每个超出阈值范围的ALS值断言一个中断(默认)
- * @retval 如果persist = 1，则连续2个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 2，则连续3个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 3，则连续4个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 4，则连续5个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 5，则连续6个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 6，则连续7个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 7，则连续8个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 8，则连续9个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 9，则连续10个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 10，则连续11个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 11，则连续12个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 12，则连续13个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 13，则连续14个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 14，则连续15个超出阈值范围的ALS值断言中断
- * @retval 如果persist = 15，则连续16个超出阈值范围的ALS值断言中断
+ * @retval 0        每个超出阈值范围的ALS值断言一个中断(默认)
+ * @retval 1        则连续2个超出阈值范围的ALS值断言中断
+ * @retval 2        则连续3个超出阈值范围的ALS值断言中断
+ * @retval 3        则连续4个超出阈值范围的ALS值断言中断
+ * @retval 4        则连续5个超出阈值范围的ALS值断言中断
+ * @retval 5        则连续6个超出阈值范围的ALS值断言中断
+ * @retval 6        则连续7个超出阈值范围的ALS值断言中断
+ * @retval 7        则连续8个超出阈值范围的ALS值断言中断
+ * @retval 8        则连续9个超出阈值范围的ALS值断言中断
+ * @retval 9        则连续10个超出阈值范围的ALS值断言中断
+ * @retval 10       则连续11个超出阈值范围的ALS值断言中断
+ * @retval 11       则连续12个超出阈值范围的ALS值断言中断
+ * @retval 12       则连续13个超出阈值范围的ALS值断言中断
+ * @retval 13       则连续14个超出阈值范围的ALS值断言中断
+ * @retval 14       则连续15个超出阈值范围的ALS值断言中断
+ * @retval 15       则连续16个超出阈值范围的ALS值断言中断
  */
 uint8_t getIntrPersist(void);
 
@@ -261,7 +265,7 @@ sThres_t getThreshold();
  * @param alsData: 该传感器的ALS数据
  * @return double: 转化后的lux值
  */
-double getLux(uint8_t gain, uint8_t resolution, uint32_t alsData);
+double getLux(eGain_t gain, eResolution_t resolution, uint32_t alsData);
 
 /**
  * @fn getLux
